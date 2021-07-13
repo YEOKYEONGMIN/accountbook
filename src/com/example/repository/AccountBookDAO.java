@@ -299,7 +299,8 @@ public class AccountBookDAO {
 		try {
 			con= getConnection();
 			
-			String sql = "select * from accountbook where time >= '2021/"+ a +"/01' and time < '2021/"+(b+1)+"/01'";
+			String sql = "select * from accountbook where time >= '2021/"+ a +"/01' and time < '2021/"+(b+1)+"/01' ";
+			sql += "order by time";
 			
 			pstmt = con.prepareStatement(sql);
 			
@@ -326,4 +327,130 @@ public class AccountBookDAO {
 		
 		return list;
 	}
+	public List<AccountBookData> getdatas() {
+		List<AccountBookData> list = new ArrayList<>();
+		
+		Connection con = null; // 접속
+		PreparedStatement pstmt = null; // sql 문장객체 타입
+		ResultSet rs = null;
+		
+		try {
+			con= getConnection();
+			
+			String sql = "select * from accountbook";
+			
+			pstmt = con.prepareStatement(sql);
+			
+			rs = pstmt.executeQuery();
+			
+			while(rs.next()) {
+				AccountBookData abData = new AccountBookData();
+				abData.setNum(rs.getInt("num"));
+				abData.setTime(rs.getTimestamp("time"));
+				abData.setInout(rs.getString("inout"));
+				abData.setCategories(rs.getString("categories"));
+				abData.setAmount(rs.getInt("amount"));
+				abData.setMemo(rs.getString("memo"));
+				
+				
+				list.add(abData);
+			} // while
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			close(con,pstmt,rs);
+		}
+		
+		return list;
+	}
+	public List<AccountBookData> getdatasByNum(int num) {
+		List<AccountBookData> list = new ArrayList<>();
+		
+		Connection con = null; // 접속
+		PreparedStatement pstmt = null; // sql 문장객체 타입
+		ResultSet rs = null;
+		
+		try {
+			con= getConnection();
+			
+			String sql = "select * from accountbook where num = ? ";
+			
+			pstmt = con.prepareStatement(sql);
+			pstmt.setInt(1, num);
+			
+			rs = pstmt.executeQuery();
+			
+			while(rs.next()) {
+				AccountBookData abData = new AccountBookData();
+				abData.setNum(rs.getInt("num"));
+				abData.setTime(rs.getTimestamp("time"));
+				abData.setInout(rs.getString("inout"));
+				abData.setCategories(rs.getString("categories"));
+				abData.setAmount(rs.getInt("amount"));
+				abData.setMemo(rs.getString("memo"));
+				
+				
+				list.add(abData);
+			} // while
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			close(con,pstmt,rs);
+		}
+		
+		return list;
+	}
+	public void updateData(AccountBookData abData) {
+		Connection con = null;
+		PreparedStatement pstmt = null;
+
+		try {
+			con = getConnection();
+
+			String sql = "";
+			sql += "update accountbook ";
+			sql += "set time = ?, inout = ?, categories = ?, amount = ?, memo = ? ";
+			sql += "where num = ?";
+
+			pstmt = con.prepareStatement(sql);
+			pstmt.setTimestamp(1, abData.getTime());
+			pstmt.setString(2, abData.getInout());
+			pstmt.setString(3, abData.getCategories());
+			pstmt.setInt(4, abData.getAmount());
+			pstmt.setString(5, abData.getMemo());
+			pstmt.setInt(6, abData.getNum());
+
+			pstmt.executeUpdate();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			close(con, pstmt);
+		}
+	}
+	public void removeByNum(int num) {
+		Connection con = null;
+		PreparedStatement pstmt = null;
+		
+		try {
+			con = getConnection();
+			
+			String sql = "";
+			sql += "DELETE FROM accountbook ";
+			sql += "WHERE num = ? ";
+			
+			pstmt = con.prepareStatement(sql);
+			pstmt.setInt(1, num);
+			
+			pstmt.executeUpdate();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			close(con, pstmt);
+		}
+	} // removeByNum
+	
 }

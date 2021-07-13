@@ -13,11 +13,12 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
 import java.awt.Color;
-import java.awt.Container;
-import java.awt.Dimension;
+import java.awt.EventQueue;
 
 import javax.swing.SwingConstants;
+import javax.swing.table.DefaultTableModel;
 
+import com.example.design.RoundBtn;
 import com.example.domain.AccountBookData;
 import com.example.repository.AccountBookDAO;
 
@@ -37,14 +38,12 @@ import javax.swing.JTable;
 import java.awt.GridLayout;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import javax.swing.BoxLayout;
 
 public class AccountBook extends JFrame {
 	
 	AccountBookDAO accountBookDAO = new AccountBookDAO();
 	
 	private Vector<String> columnNames = new Vector<>();
-	
 	
 	private JTabbedPane tabbedPane;
 	private JPanel panelMain;
@@ -67,10 +66,10 @@ public class AccountBook extends JFrame {
 	private JTextField tfAmount;
 	private JLabel lbl6;
 	private JTextField tfMemo;
-	private JButton btnWrite;
+	private RoundBtn btnWrite;
 	private JPanel panelTop1;
-	private JButton btnIncome;
-	private JButton btnexpenses;
+	private RoundBtn btnIncome;
+	private RoundBtn btnexpenses;
 	private JPanel panelEast;
 	private JPanel panel_1;
 	private JPanel panel_2;
@@ -97,6 +96,9 @@ public class AccountBook extends JFrame {
 	private JLabel lblNewLabel;
 	private JComboBox comboBox2;
 	private JTable table;
+	private DefaultTableModel tableModel = new DefaultTableModel();
+	private DefaultTableModel tableModel1 = new DefaultTableModel();
+	private DefaultTableModel tableModel2 = new DefaultTableModel();
 	private JPanel panel;
 	private JPanel panel_7;
 	private JPanel panel_8;
@@ -106,7 +108,33 @@ public class AccountBook extends JFrame {
 	private JLabel lblExpenses2;
 	private JScrollPane scrollPane_1;
 	private JTable table_1;
+	private RoundBtn btnSearch;
 	private JButton btnNewButton;
+	private JPanel panelModify;
+	private JPanel panelEast2;
+	private JPanel panel_10;
+	private JPanel panel_12;
+	private JPanel panel_13;
+	private JPanel panel_14;
+	private JPanel panel_15;
+	private JPanel panel_16;
+	private JLabel lblNum;
+	private JTextField tfNum;
+	private JLabel lblNewLabel_5;
+	private JLabel lblNewLabel_6;
+	private JLabel lblNewLabel_7;
+	private JTextField tfAmount1;
+	private JLabel lblNewLabel_8;
+	private JTextField tfMemo1;
+	private JButton btnNewButton_1;
+	private JButton btnNewButton_2;
+	private JScrollPane scrollPane_2;
+	private JTable table_2;
+	private JRadioButton rdbtnIncome1;
+	private JRadioButton rdbtnExpenses1;
+	private JComboBox cbCategory;
+	private final ButtonGroup buttonGroup_1 = new ButtonGroup();
+	private JButton btnRemove;
 	public AccountBook() {
 		super("가계부");
 		getContentPane().setBackground(Color.WHITE);
@@ -124,6 +152,7 @@ public class AccountBook extends JFrame {
 		
 		
 		setLabel();
+		getdatas();
 		setResizable(false);
 		setVisible(true);
 		
@@ -138,6 +167,7 @@ public class AccountBook extends JFrame {
 			tabbedPane.addTab("메인", null, getPanelMain(), null);
 			tabbedPane.addTab("수입 지출내역", null, getPanelList(), null);
 			tabbedPane.addTab("월보고서", null, getPanelMonth(), null);
+			tabbedPane.addTab("수정하기", null, getPanelModify(), null);
 		}
 		return tabbedPane;
 	}
@@ -280,7 +310,7 @@ public class AccountBook extends JFrame {
 					if(rdbtnExpenses.isSelected()) {
 						comboBox.setModel(new DefaultComboBoxModel(new String[] {"카테고리..", "식비", "교통/차량",
 											"여가", "쇼핑", "기타"}));
-						}
+					}
 				}
 			});
 			rdbtnExpenses.setHorizontalAlignment(SwingConstants.CENTER);
@@ -335,9 +365,9 @@ public class AccountBook extends JFrame {
 		}
 		return tfMemo;
 	}
-	private JButton getBtnWrite() {
+	private RoundBtn getBtnWrite() {
 		if (btnWrite == null) {
-			btnWrite = new JButton("작성");
+			btnWrite = new RoundBtn("작성");
 			btnWrite.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
@@ -354,6 +384,12 @@ public class AccountBook extends JFrame {
 					if(tfAmount.getText().length() == 0) {
 						JOptionPane.showMessageDialog(AccountBook.this, "금액을 입력하세요.", "에러", JOptionPane.ERROR_MESSAGE);
 						return;
+					}
+					for(int i=0;i<tfAmount.getText().length();i++) {
+						if(!(tfAmount.getText().charAt(i)>='0'&&tfAmount.getText().charAt(i)<='9')) {
+							JOptionPane.showMessageDialog(AccountBook.this, "금액은 숫자만 입력하세요.", "에러", JOptionPane.ERROR_MESSAGE);
+							return;
+						}
 					}
 					abData.setTime(new Timestamp(System.currentTimeMillis()));
 					abData.setInout(rdbtnIncome.isSelected() ? "income" : "expenses");
@@ -385,7 +421,7 @@ public class AccountBook extends JFrame {
 					comboBox.setSelectedIndex(0);
 					tfAmount.setText("");
 					tfMemo.setText("");
-					
+					JOptionPane.showMessageDialog(AccountBook.this, "작성 되었습니다..", "작성성공", JOptionPane.INFORMATION_MESSAGE);
 				}
 			});
 			btnWrite.setForeground(Color.WHITE);
@@ -412,9 +448,11 @@ public class AccountBook extends JFrame {
 		}
 		return panelTop1;
 	}
-	private JButton getBtnIncome() {
+	private RoundBtn getBtnIncome() {
 		if (btnIncome == null) {
-			btnIncome = new JButton("수입");
+			btnIncome = new RoundBtn("수입");
+			btnIncome.setForeground(Color.WHITE);
+			btnIncome.setBackground(new Color(0, 153, 255));
 			btnIncome.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
@@ -424,9 +462,11 @@ public class AccountBook extends JFrame {
 		}
 		return btnIncome;
 	}
-	private JButton getBtnexpenses() {
+	private RoundBtn getBtnexpenses() {
 		if (btnexpenses == null) {
-			btnexpenses = new JButton("지출");
+			btnexpenses = new RoundBtn("지출");
+			btnexpenses.setForeground(Color.WHITE);
+			btnexpenses.setBackground(new Color(255, 102, 102));
 			btnexpenses.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
@@ -587,55 +627,79 @@ public class AccountBook extends JFrame {
 		return lblTotal2;
 	}
 	private void setIncome() {
-		List<AccountBookData> list = accountBookDAO.getIncomeDatas();
-		int ssum = 0, psum = 0, asum = 0, bsum = 0, esum = 0;
-		String category;
-		lbl_6.setForeground(new Color(0, 153, 255));
-		lblTotal2.setForeground(new Color(0, 153, 255));
-		lblTotal2.setText(accountBookDAO.income()+"원");
-		for (AccountBookData abBook : list) {
-			category = abBook.getCategories();
-			switch (category) {
-			case "salary": ssum += abBook.getAmount(); break;
-			case "pocketmoney": psum += abBook.getAmount(); break;
-			case "addincome": asum += abBook.getAmount(); break;
-			case "bonus": bsum += abBook.getAmount(); break;
-			case "etc": esum += abBook.getAmount(); break;
-			}
-		}
-		lbl_1.setForeground(new Color(0, 153, 255));
-		lbl_2.setForeground(new Color(0, 153, 255));
-		lbl_3.setForeground(new Color(0, 153, 255));
-		lbl_4.setForeground(new Color(0, 153, 255));
-		lbl_5.setForeground(new Color(0, 153, 255));
-		progressBar1.setForeground(new Color(0, 153, 255));
-		progressBar2.setForeground(new Color(0, 153, 255));
-		progressBar3.setForeground(new Color(0, 153, 255));
-		progressBar4.setForeground(new Color(0, 153, 255));
-		progressBar5.setForeground(new Color(0, 153, 255));
 		
-		lbl_1.setText("월급");
-		float value = (float)ssum/accountBookDAO.income()*100;
-		int value1 = Math.round(value);
-		progressBar1.setValue(value1);
-		lbl_2.setText("용돈");
-		value = (float)psum/accountBookDAO.income()*100;
-		value1 = Math.round(value);
-		progressBar2.setValue(value1);
-		lbl_3.setText("부수입");
-		value = (float)asum/accountBookDAO.income()*100;
-		value1 = Math.round(value);
-		progressBar3.setValue(value1);
-		lbl_4.setText("상여");
-		value = (float)bsum/accountBookDAO.income()*100;
-		value1 = Math.round(value);
-		progressBar4.setValue(value1);
-		lbl_5.setText("기타");
-		value = (float)esum/accountBookDAO.income()*100;
-		value1 = Math.round(value);
-		progressBar5.setValue(value1);
+		// 일반스레드
+		Thread thread = new Thread(new Runnable() {
+			
+			int ssum = 0, psum = 0, asum = 0, bsum = 0, esum = 0;
+			
+			@Override
+			public void run() {
+				List<AccountBookData> list = accountBookDAO.getIncomeDatas();
+				//int ssum = 0, psum = 0, asum = 0, bsum = 0, esum = 0;
+				String category;
+				
+				int income = accountBookDAO.income();
+				
+				for (AccountBookData abBook : list) {
+					category = abBook.getCategories();
+					switch (category) {
+					case "salary": ssum += abBook.getAmount(); break;
+					case "pocketmoney": psum += abBook.getAmount(); break;
+					case "addincome": asum += abBook.getAmount(); break;
+					case "bonus": bsum += abBook.getAmount(); break;
+					case "etc": esum += abBook.getAmount(); break;
+					}
+				}
+				
+				// UI 스레드
+				EventQueue.invokeLater(new Runnable() {
+					public void run() {
+						lbl_6.setForeground(new Color(0, 153, 255));
+						lblTotal2.setForeground(new Color(0, 153, 255));
+						lblTotal2.setText(income+"원");
+						
+						lbl_1.setForeground(new Color(0, 153, 255));
+						lbl_2.setForeground(new Color(0, 153, 255));
+						lbl_3.setForeground(new Color(0, 153, 255));
+						lbl_4.setForeground(new Color(0, 153, 255));
+						lbl_5.setForeground(new Color(0, 153, 255));
+						progressBar1.setForeground(new Color(0, 153, 255));
+						progressBar2.setForeground(new Color(0, 153, 255));
+						progressBar3.setForeground(new Color(0, 153, 255));
+						progressBar4.setForeground(new Color(0, 153, 255));
+						progressBar5.setForeground(new Color(0, 153, 255));
+						
+						lbl_1.setText("월급");
+						float value = (float)ssum/income*100;
+						int value1 = Math.round(value);
+						progressBar1.setValue(value1);
+						lbl_2.setText("용돈");
+						value = (float)psum/income*100;
+						value1 = Math.round(value);
+						progressBar2.setValue(value1);
+						lbl_3.setText("부수입");
+						value = (float)asum/income*100;
+						value1 = Math.round(value);
+						progressBar3.setValue(value1);
+						lbl_4.setText("상여");
+						value = (float)bsum/income*100;
+						value1 = Math.round(value);
+						progressBar4.setValue(value1);
+						lbl_5.setText("기타");
+						value = (float)esum/income*100;
+						value1 = Math.round(value);
+						progressBar5.setValue(value1);
+						
+						AccountBook.this.setVisible(true);
+					} // run
+				});
+				
+			} // run
+		});
 		
-		
+		thread.start();
+
 	}
 	
 	
@@ -643,69 +707,87 @@ public class AccountBook extends JFrame {
 	
 	
 	private void setExpenses() {
-		List<AccountBookData> list = accountBookDAO.getExpensesDatas();
-		int fsum = 0, tsum = 0, csum = 0, ssum = 0, esum = 0;
-		String category;
-		lbl_6.setForeground(new Color(255, 0, 51));
-		lblTotal2.setForeground(new Color(255, 0, 51));
-		lblTotal2.setText(accountBookDAO.expenses()+"원");
-		
-
-		for(AccountBookData abBook : list) {
-			category = abBook.getCategories();
-			switch(category) {
-			case "food": ; fsum+= abBook.getAmount();   break;
-			case "traffic": tsum+= abBook.getAmount(); break;
-			case "culture": csum+= abBook.getAmount(); break;
-			case "shopping": ssum+= abBook.getAmount(); break;
-			case "etc": esum+= abBook.getAmount(); break;
+		// 일반스레드
+		new Thread(new Runnable() {
+			int fsum = 0, tsum = 0, csum = 0, ssum = 0, esum = 0;
+			@Override
+			public void run() {
+				List<AccountBookData> list = accountBookDAO.getExpensesDatas();
+				String category;
+				
+				int expenses = accountBookDAO.expenses();
+				
+				for(AccountBookData abBook : list) {
+					category = abBook.getCategories();
+					switch(category) {
+					case "food": ; fsum+= abBook.getAmount();   break;
+					case "traffic": tsum+= abBook.getAmount(); break;
+					case "culture": csum+= abBook.getAmount(); break;
+					case "shopping": ssum+= abBook.getAmount(); break;
+					case "etc": esum+= abBook.getAmount(); break;
+					}
+				}
+				
+				// UI 스레드
+				EventQueue.invokeLater(new Runnable() {
+					public void run() {
+						lbl_6.setForeground(new Color(255, 0, 51));
+						lblTotal2.setForeground(new Color(255, 0, 51));
+						lblTotal2.setText(expenses+"원");
+						
+						lbl_1.setForeground(new Color(255, 0, 51));
+						progressBar1.setForeground(new Color(255, 0, 51));
+						lbl_2.setForeground(new Color(255, 0, 51));
+						progressBar2.setForeground(new Color(255, 0, 51));
+						lbl_3.setForeground(new Color(255, 0, 51));
+						progressBar3.setForeground(new Color(255, 0, 51));
+						lbl_4.setForeground(new Color(255, 0, 51));
+						progressBar4.setForeground(new Color(255, 0, 51));
+						lbl_5.setForeground(new Color(255, 0, 51));
+						progressBar5.setForeground(new Color(255, 0, 51));
+						
+						lbl_1.setText("식비");
+						float value = (float)fsum/expenses*100;
+						int value1 = Math.round(value);
+						progressBar1.setValue(value1);
+						lbl_2.setText("교통");
+						value = (float)tsum/expenses*100;
+						value1 = Math.round(value);
+						progressBar2.setValue(value1);
+						lbl_3.setText("여가");
+						value = (float)csum/expenses*100;
+						value1 = Math.round(value);
+						progressBar3.setValue(value1);
+						lbl_4.setText("쇼핑");
+						value = (float)ssum/expenses*100;
+						value1 = Math.round(value);
+						progressBar4.setValue(value1);
+						lbl_5.setText("기타");
+						value = (float)esum/expenses*100;
+						value1 = Math.round(value);
+						progressBar5.setValue(value1);
+						AccountBook.this.setVisible(true);
+					}
+				});
+				
+				
+				
 			}
-		}
-		
-		lbl_1.setForeground(new Color(255, 0, 51));
-		progressBar1.setForeground(new Color(255, 0, 51));
-		lbl_2.setForeground(new Color(255, 0, 51));
-		progressBar2.setForeground(new Color(255, 0, 51));
-		lbl_3.setForeground(new Color(255, 0, 51));
-		progressBar3.setForeground(new Color(255, 0, 51));
-		lbl_4.setForeground(new Color(255, 0, 51));
-		progressBar4.setForeground(new Color(255, 0, 51));
-		lbl_5.setForeground(new Color(255, 0, 51));
-		progressBar5.setForeground(new Color(255, 0, 51));
-		
-		lbl_1.setText("식비");
-		float value = (float)fsum/accountBookDAO.expenses()*100;
-		int value1 = Math.round(value);
-		progressBar1.setValue(value1);
-		lbl_2.setText("교통");
-		value = (float)tsum/accountBookDAO.expenses()*100;
-		value1 = Math.round(value);
-		progressBar2.setValue(value1);
-		lbl_3.setText("여가");
-		value = (float)csum/accountBookDAO.expenses()*100;
-		value1 = Math.round(value);
-		progressBar3.setValue(value1);
-		lbl_4.setText("쇼핑");
-		value = (float)ssum/accountBookDAO.expenses()*100;
-		value1 = Math.round(value);
-		progressBar4.setValue(value1);
-		lbl_5.setText("기타");
-		value = (float)esum/accountBookDAO.expenses()*100;
-		value1 = Math.round(value);
-		progressBar5.setValue(value1);
+		}).start();
+
 	}
 	private void income() {
 		setIncome();
+		
 		List<AccountBookData> list = accountBookDAO.getIncomeDatas();
 		 
 		Vector<Vector<Object>> vector = getVectorFromList(list);
 		 
-		 
-		 
 		// JTable의 첫번째 매개변수는 Vecter 데이터, 두번째 매개변수는 1차원배열 열이름
-		table = new JTable(vector,columnNames); 
-		 
-		panelList.add(new JScrollPane(table),BorderLayout.CENTER);
+		tableModel.setDataVector(vector, columnNames);
+		table.setModel(tableModel);
+		
+		//panelList.add(new JScrollPane(table),BorderLayout.CENTER);
 		//화면갱신
 		this.setVisible(true);
 	} 
@@ -719,24 +801,38 @@ public class AccountBook extends JFrame {
 		 
 		 
 		// JTable의 첫번째 매개변수는 Vecter 데이터, 두번째 매개변수는 1차원배열 열이름
-		table = new JTable(vector,columnNames); 
-		 
-		panelList.add(new JScrollPane(table),BorderLayout.CENTER);
+		tableModel.setDataVector(vector, columnNames);
+		table.setModel(tableModel);
+		
+		//panelList.add(new JScrollPane(table),BorderLayout.CENTER);
 		//화면갱신
 		this.setVisible(true);
 	} 
 	private void monthdatas(int a, int b) {
-		setExpenses();
 		List<AccountBookData> list = accountBookDAO.getMonthDatas(a,b);
 		 
 		Vector<Vector<Object>> vector = getVectorFromList(list);
 		 
 		 
+		// JTable의 첫번째 매개변수는 Vecter 데이터, 두번째 매개변수는 1차원배열 열이름
+		tableModel1.setDataVector(vector, columnNames);
+		table_1.setModel(tableModel1);
+		 
+		//panelMonth.add(new JScrollPane(table),BorderLayout.CENTER);
+		//화면갱신
+		this.setVisible(true);
+	} 
+	private void getdatas() {
+		List<AccountBookData> list = accountBookDAO.getdatas();
+		 
+		Vector<Vector<Object>> vector = getVectorFromList(list);
+		 
 		 
 		// JTable의 첫번째 매개변수는 Vecter 데이터, 두번째 매개변수는 1차원배열 열이름
-		table = new JTable(vector,columnNames); 
+		tableModel2.setDataVector(vector, columnNames);
+		table_2.setModel(tableModel2);
 		 
-		panelMonth.add(new JScrollPane(table),BorderLayout.CENTER);
+		//panelMonth.add(new JScrollPane(table),BorderLayout.CENTER);
 		//화면갱신
 		this.setVisible(true);
 	} 
@@ -785,6 +881,7 @@ public class AccountBook extends JFrame {
 			panelTop2.add(getComboBox1());
 			panelTop2.add(getLblNewLabel());
 			panelTop2.add(getComboBox2());
+			panelTop2.add(getBtnSearch());
 			panelTop2.add(getBtnNewButton());
 		}
 		return panelTop2;
@@ -913,25 +1010,334 @@ public class AccountBook extends JFrame {
 		}
 		return table_1;
 	}
-	private JButton getBtnNewButton() {
-		if (btnNewButton == null) {
-			btnNewButton = new JButton("확인");
-			btnNewButton.addActionListener(new ActionListener() {
+	private RoundBtn getBtnSearch() {
+		if (btnSearch == null) {
+			btnSearch = new RoundBtn("검색");
+			btnSearch.setForeground(Color.WHITE);
+			btnSearch.setBackground(new Color(255, 102, 102));
+			btnSearch.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					int a,b;
 					a=comboBox1.getSelectedIndex()+1;
 					b=comboBox2.getSelectedIndex()+1;
-					lblIncome2.setText(accountBookDAO.monthincome(a, b)+"원");
-					lblExpenses2.setText(accountBookDAO.monthexpenses(a, b)+"원");
-					
+					String str1 =accountBookDAO.monthincome(a, b)+"원";
+					String str2 =accountBookDAO.monthexpenses(a, b)+"원";
+					lblIncome2.setText(str1);
+					lblExpenses2.setText(str2);
 					
 					
 					monthdatas(a, b);
 				}
 			});
 		}
-		return btnNewButton;
+		return btnSearch;
 	}
 	
+	private JButton getBtnNewButton() {
+		if (btnNewButton == null) {
+			btnNewButton = new JButton("확인");
+			btnNewButton.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					int row = table_1.getSelectedRow();
+
+					System.out.println(table_1.getModel().getValueAt(row, 0));
+					
+				}
+			});
+		}
+		return btnNewButton;
+	}
+	private JPanel getPanelModify() {
+		if (panelModify == null) {
+			panelModify = new JPanel();
+			panelModify.setLayout(new BorderLayout(0, 0));
+			panelModify.add(getPanel_9_1(), BorderLayout.EAST);
+			panelModify.add(getScrollPane_2(), BorderLayout.CENTER);
+		}
+		return panelModify;
+	}
+	private JPanel getPanel_9_1() {
+		if (panelEast2 == null) {
+			panelEast2 = new JPanel();
+			panelEast2.setLayout(new GridLayout(0, 1, 0, 0));
+			panelEast2.add(getPanel_10());
+			panelEast2.add(getPanel_12());
+			panelEast2.add(getPanel_13());
+			panelEast2.add(getPanel_14());
+			panelEast2.add(getPanel_15());
+			panelEast2.add(getPanel_16());
+		}
+		return panelEast2;
+	}
+	private JPanel getPanel_10() {
+		if (panel_10 == null) {
+			panel_10 = new JPanel();
+			panel_10.add(getLblNum());
+			panel_10.add(getTfNum());
+		}
+		return panel_10;
+	}
+	private JPanel getPanel_12() {
+		if (panel_12 == null) {
+			panel_12 = new JPanel();
+			panel_12.add(getLblNewLabel_5());
+			panel_12.add(getRdbtnIncome1());
+			panel_12.add(getRdbtnExpenses1());
+		}
+		return panel_12;
+	}
+	private JPanel getPanel_13() {
+		if (panel_13 == null) {
+			panel_13 = new JPanel();
+			panel_13.add(getLblNewLabel_6());
+			panel_13.add(getCbCategory());
+		}
+		return panel_13;
+	}
+	private JPanel getPanel_14() {
+		if (panel_14 == null) {
+			panel_14 = new JPanel();
+			panel_14.add(getLblNewLabel_7());
+			panel_14.add(getTfAmount1());
+		}
+		return panel_14;
+	}
+	private JPanel getPanel_15() {
+		if (panel_15 == null) {
+			panel_15 = new JPanel();
+			panel_15.add(getLblNewLabel_8());
+			panel_15.add(getTfMemo1());
+		}
+		return panel_15;
+	}
+	private JPanel getPanel_16() {
+		if (panel_16 == null) {
+			panel_16 = new JPanel();
+			panel_16.add(getBtnNewButton_1());
+			panel_16.add(getBtnNewButton_2());
+			panel_16.add(getBtnRemove());
+		}
+		return panel_16;
+	}
+	private JLabel getLblNum() {
+		if (lblNum == null) {
+			lblNum = new JLabel("입력순서");
+		}
+		return lblNum;
+	}
+	private JTextField getTfNum() {
+		if (tfNum == null) {
+			tfNum = new JTextField();
+			tfNum.setEnabled(false);
+			tfNum.setColumns(10);
+		}
+		return tfNum;
+	}
+	private JLabel getLblNewLabel_5() {
+		if (lblNewLabel_5 == null) {
+			lblNewLabel_5 = new JLabel("수입/지출");
+		}
+		return lblNewLabel_5;
+	}
+	private JLabel getLblNewLabel_6() {
+		if (lblNewLabel_6 == null) {
+			lblNewLabel_6 = new JLabel("카테고리");
+		}
+		return lblNewLabel_6;
+	}
+	private JLabel getLblNewLabel_7() {
+		if (lblNewLabel_7 == null) {
+			lblNewLabel_7 = new JLabel("금액");
+		}
+		return lblNewLabel_7;
+	}
+	private JTextField getTfAmount1() {
+		if (tfAmount1 == null) {
+			tfAmount1 = new JTextField();
+			tfAmount1.setColumns(10);
+		}
+		return tfAmount1;
+	}
+	private JLabel getLblNewLabel_8() {
+		if (lblNewLabel_8 == null) {
+			lblNewLabel_8 = new JLabel("내용");
+		}
+		return lblNewLabel_8;
+	}
+	private JTextField getTfMemo1() {
+		if (tfMemo1 == null) {
+			tfMemo1 = new JTextField();
+			tfMemo1.setColumns(10);
+		}
+		return tfMemo1;
+	}
+	private JButton getBtnNewButton_1() {
+		if (btnNewButton_1 == null) {
+			btnNewButton_1 = new JButton("선택");
+			btnNewButton_1.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					int row = table_2.getSelectedRow();
+
+					int num = (int) table_2.getModel().getValueAt(row, 0);
+					
+					List<AccountBookData> list  = accountBookDAO.getdatasByNum(num);
+					for(AccountBookData abData : list ) {
+						tfNum.setText(abData.getNum()+"");
+						if(abData.getInout().equals("income")){
+							rdbtnIncome1.setSelected(true);
+								cbCategory.setModel(
+										new DefaultComboBoxModel(new String[] { "카테고리..", "월급", "용돈", "부수입", "상여", "기타" }));
+							switch(abData.getCategories()) {
+							case "salary": cbCategory.setSelectedIndex(1); break;
+							case "pocketmoney": cbCategory.setSelectedIndex(2); break;
+							case "addincome": cbCategory.setSelectedIndex(3); break;
+							case "bonus": cbCategory.setSelectedIndex(4); break;
+							case "etc": cbCategory.setSelectedIndex(5); break;
+							}
+							
+						}else {
+							rdbtnExpenses1.setSelected(true);
+							cbCategory.setModel(new DefaultComboBoxModel(new String[] {"카테고리..", "식비", "교통/차량",
+									"여가", "쇼핑", "기타"}));
+							switch(abData.getCategories()) {
+							case "food": cbCategory.setSelectedIndex(1); break;
+							case "traffic": cbCategory.setSelectedIndex(2); break;
+							case "culture": cbCategory.setSelectedIndex(3); break;
+							case "shopping": cbCategory.setSelectedIndex(4); break;
+							case "etc": cbCategory.setSelectedIndex(5); break;
+							}
+						}
+						tfAmount1.setText(abData.getAmount()+"");
+						tfMemo1.setText(abData.getMemo());
+					}
+				
+					
+					
+					
+				}
+			});
+		}
+		return btnNewButton_1;
+	}
+	private JButton getBtnNewButton_2() {
+		if (btnNewButton_2 == null) {
+			btnNewButton_2 = new JButton("수정");
+			btnNewButton_2.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					AccountBookData abData = new AccountBookData();
+					if(!(rdbtnIncome1.isSelected() || rdbtnExpenses1.isSelected())) {
+						JOptionPane.showMessageDialog(AccountBook.this, "수입, 지출 버튼을 눌러주세요", "에러", JOptionPane.ERROR_MESSAGE);
+						return;
+					}
+					int selectedIndex  = cbCategory.getSelectedIndex();
+					if(selectedIndex == 0) {
+						JOptionPane.showMessageDialog(AccountBook.this, "검색항목을 선택하세요.", "에러", JOptionPane.ERROR_MESSAGE);
+						return;
+					}
+					if(tfAmount1.getText().length() == 0) {
+						JOptionPane.showMessageDialog(AccountBook.this, "금액을 입력하세요.", "에러", JOptionPane.ERROR_MESSAGE);
+						return;
+					}
+					for(int i=0;i<tfAmount1.getText().length();i++) {
+						if(!(tfAmount1.getText().charAt(i)>='0'&&tfAmount1.getText().charAt(i)<='9')) {
+							JOptionPane.showMessageDialog(AccountBook.this, "금액은 숫자만 입력하세요.", "에러", JOptionPane.ERROR_MESSAGE);
+							return;
+						}
+					}
+					abData.setNum(Integer.parseInt(tfNum.getText()));
+					abData.setTime(new Timestamp(System.currentTimeMillis()));
+					abData.setInout(rdbtnIncome1.isSelected() ? "income" : "expenses");
+					String field = "";
+					if(rdbtnExpenses1.isSelected()) {
+						switch(selectedIndex) {
+						case 1: field = "food"; break;
+						case 2: field = "traffic"; break;
+						case 3: field = "culture"; break;
+						case 4: field = "shopping"; break;
+						case 5: field = "etc"; break;
+						}
+					}else {
+						switch(selectedIndex) {
+						case 1: field = "salary"; break;
+						case 2: field = "pocketmoney"; break;
+						case 3: field = "addincome"; break;
+						case 4: field = "bonus"; break;
+						case 5: field = "etc"; break;
+						}
+					}
+					abData.setCategories(field);
+					abData.setAmount(Integer.parseInt(tfAmount1.getText()));
+					abData.setMemo(tfMemo1.getText());
+					accountBookDAO.updateData(abData);
+					
+					getdatas();
+					tfNum.setText("");
+					buttonGroup.clearSelection();
+					cbCategory.setSelectedIndex(0);
+					tfAmount1.setText("");
+					tfMemo1.setText("");
+					JOptionPane.showMessageDialog(AccountBook.this, "수정 되었습니다..", "수정성공", JOptionPane.INFORMATION_MESSAGE);
+				}
+			});
+		}
+		return btnNewButton_2;
+	}
+	private JScrollPane getScrollPane_2() {
+		if (scrollPane_2 == null) {
+			scrollPane_2 = new JScrollPane();
+			scrollPane_2.setViewportView(getTable_2_1());
+		}
+		return scrollPane_2;
+	}
+	private JTable getTable_2_1() {
+		if (table_2 == null) {
+			table_2 = new JTable();
+		}
+		return table_2;
+	}
+	private JRadioButton getRdbtnIncome1() {
+		if (rdbtnIncome1 == null) {
+			rdbtnIncome1 = new JRadioButton("수입");
+			buttonGroup_1.add(rdbtnIncome1);
+			
+		}
+		return rdbtnIncome1;
+	}
+	private JRadioButton getRdbtnExpenses1() {
+		if (rdbtnExpenses1 == null) {
+			rdbtnExpenses1 = new JRadioButton("지출");
+			buttonGroup_1.add(rdbtnExpenses1);
+		}
+		return rdbtnExpenses1;
+	}
+	private JComboBox getCbCategory() {
+		if (cbCategory == null) {
+			cbCategory = new JComboBox();
+			cbCategory.setModel(new DefaultComboBoxModel(new String[] {"카테고리..."}));
+		}
+		return cbCategory;
+	}
+	private JButton getBtnRemove() {
+		if (btnRemove == null) {
+			btnRemove = new JButton("삭제");
+			btnRemove.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					if(tfNum.getText().length() == 0) {
+						JOptionPane.showMessageDialog(AccountBook.this, "삭제할 데이터를 선택하세요", "에러", JOptionPane.ERROR_MESSAGE);
+						return;
+					}
+					int num = Integer.parseInt(tfNum.getText());
+					accountBookDAO.removeByNum(num);
+					
+					getdatas();
+				}
+			});
+		}
+		return btnRemove;
+	}
 }
