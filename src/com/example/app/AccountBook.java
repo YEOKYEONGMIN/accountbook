@@ -377,7 +377,7 @@ public class AccountBook extends JFrame {
 					}
 					int selectedIndex  = comboBox.getSelectedIndex();
 					if(selectedIndex == 0) {
-						JOptionPane.showMessageDialog(AccountBook.this, "검색항목을 선택하세요.", "에러", JOptionPane.ERROR_MESSAGE);
+						JOptionPane.showMessageDialog(AccountBook.this, "카테고리를 선택하세요.", "에러", JOptionPane.ERROR_MESSAGE);
 						return;
 					}
 					if(tfAmount.getText().length() == 0) {
@@ -1132,7 +1132,7 @@ public class AccountBook extends JFrame {
 	}
 	private JLabel getLblNewLabel_6() {
 		if (lblNewLabel_6 == null) {
-			lblNewLabel_6 = new JLabel("카테고리");
+			lblNewLabel_6 = new JLabel("분류");
 		}
 		return lblNewLabel_6;
 	}
@@ -1226,13 +1226,13 @@ public class AccountBook extends JFrame {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					AccountBookData abData = new AccountBookData();
-					if(!(rdbtnIncome1.isSelected() || rdbtnExpenses1.isSelected())) {
-						JOptionPane.showMessageDialog(AccountBook.this, "수입, 지출 버튼을 눌러주세요", "에러", JOptionPane.ERROR_MESSAGE);
+					if(tfNum.getText().length() == 0) {
+						JOptionPane.showMessageDialog(AccountBook.this, "수정할 데이터를 선택해 주세요.", "에러", JOptionPane.ERROR_MESSAGE);
 						return;
 					}
 					int selectedIndex  = cbCategory.getSelectedIndex();
 					if(selectedIndex == 0) {
-						JOptionPane.showMessageDialog(AccountBook.this, "검색항목을 선택하세요.", "에러", JOptionPane.ERROR_MESSAGE);
+						JOptionPane.showMessageDialog(AccountBook.this, "카테고리를 선택하세요.", "에러", JOptionPane.ERROR_MESSAGE);
 						return;
 					}
 					if(tfAmount1.getText().length() == 0) {
@@ -1277,7 +1277,7 @@ public class AccountBook extends JFrame {
 					cbCategory.setSelectedIndex(0);
 					tfAmount1.setText("");
 					tfMemo1.setText("");
-					JOptionPane.showMessageDialog(AccountBook.this, "수정 되었습니다..", "수정성공", JOptionPane.INFORMATION_MESSAGE);
+					JOptionPane.showMessageDialog(AccountBook.this, "수정 되었습니다.", "수정성공", JOptionPane.INFORMATION_MESSAGE);
 				}
 			});
 		}
@@ -1327,7 +1327,7 @@ public class AccountBook extends JFrame {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					if(tfNum.getText().length() == 0) {
-						JOptionPane.showMessageDialog(AccountBook.this, "삭제할 데이터를 선택하세요", "에러", JOptionPane.ERROR_MESSAGE);
+						JOptionPane.showMessageDialog(AccountBook.this, "삭제할 데이터를 선택하세요.", "에러", JOptionPane.ERROR_MESSAGE);
 						return;
 					}
 					int num = Integer.parseInt(tfNum.getText());
