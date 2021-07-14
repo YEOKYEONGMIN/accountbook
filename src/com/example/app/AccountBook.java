@@ -109,7 +109,6 @@ public class AccountBook extends JFrame {
 	private JScrollPane scrollPane_1;
 	private JTable table_1;
 	private RoundBtn btnSearch;
-	private JButton btnNewButton;
 	private JPanel panelModify;
 	private JPanel panelEast2;
 	private JPanel panel_10;
@@ -126,15 +125,15 @@ public class AccountBook extends JFrame {
 	private JTextField tfAmount1;
 	private JLabel lblNewLabel_8;
 	private JTextField tfMemo1;
-	private JButton btnNewButton_1;
-	private JButton btnNewButton_2;
+	private RoundBtn btnSelect;
+	private RoundBtn btnModify;
 	private JScrollPane scrollPane_2;
 	private JTable table_2;
 	private JRadioButton rdbtnIncome1;
 	private JRadioButton rdbtnExpenses1;
 	private JComboBox cbCategory;
 	private final ButtonGroup buttonGroup_1 = new ButtonGroup();
-	private JButton btnRemove;
+	private RoundBtn btnRemove;
 	public AccountBook() {
 		super("가계부");
 		getContentPane().setBackground(Color.WHITE);
@@ -421,6 +420,7 @@ public class AccountBook extends JFrame {
 					comboBox.setSelectedIndex(0);
 					tfAmount.setText("");
 					tfMemo.setText("");
+					getdatas();
 					JOptionPane.showMessageDialog(AccountBook.this, "작성 되었습니다..", "작성성공", JOptionPane.INFORMATION_MESSAGE);
 				}
 			});
@@ -882,7 +882,6 @@ public class AccountBook extends JFrame {
 			panelTop2.add(getLblNewLabel());
 			panelTop2.add(getComboBox2());
 			panelTop2.add(getBtnSearch());
-			panelTop2.add(getBtnNewButton());
 		}
 		return panelTop2;
 	}
@@ -1033,22 +1032,6 @@ public class AccountBook extends JFrame {
 		}
 		return btnSearch;
 	}
-	
-	private JButton getBtnNewButton() {
-		if (btnNewButton == null) {
-			btnNewButton = new JButton("확인");
-			btnNewButton.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					int row = table_1.getSelectedRow();
-
-					System.out.println(table_1.getModel().getValueAt(row, 0));
-					
-				}
-			});
-		}
-		return btnNewButton;
-	}
 	private JPanel getPanelModify() {
 		if (panelModify == null) {
 			panelModify = new JPanel();
@@ -1074,6 +1057,7 @@ public class AccountBook extends JFrame {
 	private JPanel getPanel_10() {
 		if (panel_10 == null) {
 			panel_10 = new JPanel();
+			panel_10.setBackground(Color.WHITE);
 			panel_10.add(getLblNum());
 			panel_10.add(getTfNum());
 		}
@@ -1082,6 +1066,7 @@ public class AccountBook extends JFrame {
 	private JPanel getPanel_12() {
 		if (panel_12 == null) {
 			panel_12 = new JPanel();
+			panel_12.setBackground(Color.WHITE);
 			panel_12.add(getLblNewLabel_5());
 			panel_12.add(getRdbtnIncome1());
 			panel_12.add(getRdbtnExpenses1());
@@ -1091,6 +1076,7 @@ public class AccountBook extends JFrame {
 	private JPanel getPanel_13() {
 		if (panel_13 == null) {
 			panel_13 = new JPanel();
+			panel_13.setBackground(Color.WHITE);
 			panel_13.add(getLblNewLabel_6());
 			panel_13.add(getCbCategory());
 		}
@@ -1099,6 +1085,7 @@ public class AccountBook extends JFrame {
 	private JPanel getPanel_14() {
 		if (panel_14 == null) {
 			panel_14 = new JPanel();
+			panel_14.setBackground(Color.WHITE);
 			panel_14.add(getLblNewLabel_7());
 			panel_14.add(getTfAmount1());
 		}
@@ -1107,6 +1094,7 @@ public class AccountBook extends JFrame {
 	private JPanel getPanel_15() {
 		if (panel_15 == null) {
 			panel_15 = new JPanel();
+			panel_15.setBackground(Color.WHITE);
 			panel_15.add(getLblNewLabel_8());
 			panel_15.add(getTfMemo1());
 		}
@@ -1115,8 +1103,9 @@ public class AccountBook extends JFrame {
 	private JPanel getPanel_16() {
 		if (panel_16 == null) {
 			panel_16 = new JPanel();
-			panel_16.add(getBtnNewButton_1());
-			panel_16.add(getBtnNewButton_2());
+			panel_16.setBackground(Color.WHITE);
+			panel_16.add(getBtnSelect());
+			panel_16.add(getBtnModify());
 			panel_16.add(getBtnRemove());
 		}
 		return panel_16;
@@ -1173,13 +1162,19 @@ public class AccountBook extends JFrame {
 		}
 		return tfMemo1;
 	}
-	private JButton getBtnNewButton_1() {
-		if (btnNewButton_1 == null) {
-			btnNewButton_1 = new JButton("선택");
-			btnNewButton_1.addActionListener(new ActionListener() {
+	private RoundBtn getBtnSelect() {
+		if (btnSelect == null) {
+			btnSelect = new RoundBtn("선택");
+			btnSelect.setForeground(Color.WHITE);
+			btnSelect.setBackground(new Color(255, 102, 102));
+			btnSelect.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					int row = table_2.getSelectedRow();
+					if(row == -1) {
+						JOptionPane.showMessageDialog(AccountBook.this, "데이터를 선택해 주세요.", "에러", JOptionPane.ERROR_MESSAGE);
+						return;
+					}
 
 					int num = (int) table_2.getModel().getValueAt(row, 0);
 					
@@ -1220,12 +1215,14 @@ public class AccountBook extends JFrame {
 				}
 			});
 		}
-		return btnNewButton_1;
+		return btnSelect;
 	}
-	private JButton getBtnNewButton_2() {
-		if (btnNewButton_2 == null) {
-			btnNewButton_2 = new JButton("수정");
-			btnNewButton_2.addActionListener(new ActionListener() {
+	private RoundBtn getBtnModify() {
+		if (btnModify == null) {
+			btnModify = new RoundBtn("수정");
+			btnModify.setForeground(Color.WHITE);
+			btnModify.setBackground(new Color(255, 102, 102));
+			btnModify.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					AccountBookData abData = new AccountBookData();
@@ -1284,7 +1281,7 @@ public class AccountBook extends JFrame {
 				}
 			});
 		}
-		return btnNewButton_2;
+		return btnModify;
 	}
 	private JScrollPane getScrollPane_2() {
 		if (scrollPane_2 == null) {
@@ -1321,9 +1318,11 @@ public class AccountBook extends JFrame {
 		}
 		return cbCategory;
 	}
-	private JButton getBtnRemove() {
+	private RoundBtn getBtnRemove() {
 		if (btnRemove == null) {
-			btnRemove = new JButton("삭제");
+			btnRemove = new RoundBtn("삭제");
+			btnRemove.setForeground(Color.WHITE);
+			btnRemove.setBackground(new Color(255, 102, 102));
 			btnRemove.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
